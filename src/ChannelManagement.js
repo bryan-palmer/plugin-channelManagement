@@ -13,6 +13,8 @@ import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 
+const request = require("request");
+
 const styles = theme => ({
   header: {
     fontSize: "10px",
@@ -207,21 +209,24 @@ class ChannelManagement extends React.Component {
   }
 
   fetchData(selectedWorker) {
-    const token = Flex.Manager.getInstance().user.token
-    fetch(`${this.props.url}/get-worker-channels`, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      method: "POST",
-      body: `WorkerSid=${selectedWorker}`
-    })
-      .then(response => response.json())
-      .then(jsonResponse => {
+    // create Function payload
+    let requestURL = `${this.props.url}/get-worker-channels?WorkerSid=${selectedWorker}`;
+
+    // make request to Function
+    request.post(requestURL, (err, response, body) => {
+      if (err) {
+        alert(err);
+      } else {
+        // parse JSON response
+        let thisResult = JSON.parse(body);
+
+        // update state with response
         this.setState({
-          channels: this.mapResponseToInputs(jsonResponse),
+          channels: this.mapResponseToInputs(thisResult),
           isDirty: false
         });
-      });
+      }
+    });
   }
 
   onSwitchChange = channelName => {
@@ -248,7 +253,6 @@ class ChannelManagement extends React.Component {
   };
 
   submitData() {
-    const token = Flex.Manager.getInstance().user.token
     fetch(`${this.props.url}/update-worker-channels`, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
