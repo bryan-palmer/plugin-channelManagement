@@ -5,6 +5,7 @@ Tested with Flex 1.7.1
 ## Open Issues
 - Server side security check required on functions
 - Styling issue: horizontal scroll bar present on each channel
+- Documentation missing for `get-worker-channels` w/rt `taskChannelUniqueName` filtering
 
 ![Channel Management](https://zaffre-cow-9057.twil.io/assets/Screen%20Shot%202019-02-06%20at%203.13.36%20PM.png)
 
