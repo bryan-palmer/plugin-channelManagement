@@ -9,8 +9,13 @@ exports.handler = function(context, event, callback) {
   const client = context.getTwilioClient();
   const channels = JSON.parse(event.channels);
   const WorkspaceSid = context.TWILIO_WORKSPACE_SID;
-  const WorkerSid = event.WorkerSid
+  const WorkerSid = event.WorkerSid;
 
+  // add the channels that you want to return
+  // make sure to apply the same filtering to `update-worker-channels`
+  // value: taskChannelUniqueName 
+  let channelsFilter = ['sms','chat','voice'];
+  
   const promises = channels.map(channel => {
     return new Promise((resolve, reject) => {
       client.taskrouter
@@ -39,7 +44,17 @@ exports.handler = function(context, event, callback) {
       .workerChannels.list()
       .then(result => {
         console.log(result);
-        response.body = result;
+
+        let filteredResult = [];
+            
+        result.forEach( c => {
+            if( channelsFilter.includes(c.taskChannelUniqueName) ) {
+                filteredResult.push(c);
+            }
+        });
+
+        response.body = filteredResult;
+        
         callback(null, response);
       })
       .catch(error => {

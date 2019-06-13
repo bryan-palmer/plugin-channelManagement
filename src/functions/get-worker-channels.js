@@ -7,6 +7,7 @@ exports.handler = function(context, event, callback) {
     response.appendHeader('Access-Control-Allow-Headers', 'Content-Type');
     
     // add the channels that you want to return
+    // make sure to apply the same filtering to `update-worker-channels`
     // value: taskChannelUniqueName 
     let channelsFilter = ['sms','chat','voice'];
     
