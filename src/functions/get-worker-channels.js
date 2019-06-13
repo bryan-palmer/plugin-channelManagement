@@ -1,12 +1,17 @@
 exports.handler = function(context, event, callback) {
     const response = new Twilio.Response();
-
+    
     response.appendHeader('Access-Control-Allow-Origin', '*');
     response.appendHeader('Access-Control-Allow-Methods', 'OPTIONS POST');
     response.appendHeader('Content-Type', 'application/json');
     response.appendHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+    
+    // add the channels that you want to return
+    // value: taskChannelUniqueName 
+    let channelsFilter = ['sms','chat','voice'];
+    
     let client = context.getTwilioClient();
+    
     if (event.WorkerSid === 'undefined') {
         response.body = 'no worker specified';
         console.log(response.body);
@@ -21,7 +26,15 @@ exports.handler = function(context, event, callback) {
         .workerChannels
         .list()
         .then(result => {
-            response.body = result;
+            let filteredResult = [];
+            
+            result.forEach( c => {
+                if( channelsFilter.includes(c.taskChannelUniqueName) ) {
+                    filteredResult.push(c);
+                }
+            });
+            
+            response.body = filteredResult;
             console.log(response.body);
             callback(null, response);
           })
